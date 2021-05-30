@@ -26,4 +26,5 @@ class Application(tk.Frame):
 if __name__ == "__main__":
     root = tk.Tk()
     app = Application(root)
+    root.wm_title('Image Notebook')
     app.mainloop()
