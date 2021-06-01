@@ -1,30 +1,31 @@
 import tkinter as tk
+from welcome import WelcomeFrame
+from transform import TransformFrame
+from manage import ManageFrame
 
 
-class Application(tk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.pack()
-        self.create_widgets()
+class Application(tk.Tk):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        container = tk.Frame(self)
+        container.pack(fill='both', expand=True, side='top')
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
 
-    def create_widgets(self):
-        self.hi_there = tk.Button(
-            self, text='Hello World\nClick me',
-            command=self.say_hi)
-        self.hi_there.pack(side='top')
+        self.frames = {}
+        for F in (WelcomeFrame, ManageFrame, TransformFrame):
+            frame = F(container, self)
+            self.frames[F.__name__] = frame
+            frame.grid(row=0, column=0, sticky='nsew')
 
-        self.quit_button = tk.Button(
-            self, text='QUIT', command=self.master.destroy
-        )
-        self.quit_button.pack(side='bottom')
+        self.switch_frame('WelcomeFrame')
 
-    def say_hi(self):
-        print('Hello world')
+    def switch_frame(self, frame_name):
+        frame = self.frames[frame_name]
+        frame.tkraise()
 
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = Application(root)
-    root.wm_title('Image Notebook')
+    app = Application()
+    app.wm_title('Image Notebook')
     app.mainloop()
