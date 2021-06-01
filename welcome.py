@@ -1,4 +1,6 @@
 import tkinter as tk
+from tkinter.filedialog import askopenfilenames
+from image import Image
 
 
 class WelcomeFrame(tk.Frame):
@@ -9,6 +11,19 @@ class WelcomeFrame(tk.Frame):
         label = tk.Label(self, text='Welcome')
         label.pack()
 
-        button = tk.Button(self, text='Create',
-                           command=lambda: controller.switch_frame('ManageFrame'))
-        button.pack()
+        select_button = tk.Button(
+            self, text='Open', command=self.select_files)
+        select_button.pack()
+
+        manage_button = tk.Button(
+            self, text='OK', command=lambda: self.controller.switch_frame('ManageFrame'))
+        manage_button.pack()
+
+    def select_files(self):
+        filenames = askopenfilenames(
+            title='Open Images',
+            filetypes=(('Image Files', ('*.jpg', '*.png')), ('All', '*'))
+        )
+        if filenames:
+            self.controller.set_images(
+                [Image(filename) for filename in filenames])

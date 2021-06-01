@@ -12,6 +12,7 @@ class Application(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
+        self.images = []
         self.frames = {}
         for F in (WelcomeFrame, ManageFrame, TransformFrame):
             frame = F(container, self)
@@ -23,6 +24,10 @@ class Application(tk.Tk):
     def switch_frame(self, frame_name):
         frame = self.frames[frame_name]
         frame.tkraise()
+
+    def set_images(self, images):
+        self.images = images
+        print([str(image) for image in images])
 
 
 if __name__ == "__main__":
