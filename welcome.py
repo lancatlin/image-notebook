@@ -11,6 +11,9 @@ class WelcomeFrame(tk.Frame):
         label = tk.Label(self, text='Welcome')
         label.pack()
 
+        self.selected_files = tk.Label(self)
+        self.selected_files.pack()
+
         select_button = tk.Button(
             self, text='Open', command=self.select_files)
         select_button.pack()
@@ -27,3 +30,4 @@ class WelcomeFrame(tk.Frame):
         if filenames:
             self.controller.set_images(
                 [Image(filename) for filename in filenames])
+            self.selected_files.config(text=f'Selected {len(filenames)} files')
