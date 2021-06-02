@@ -22,12 +22,13 @@ class TransformFrame(tk.Frame):
         origin_label = tk.Label(canvas_ct, text='Origin', font=('Arial', 25))
         origin_label.grid(row=0, column=0)
         self.origin = DragableCanvas(
-            canvas_ct, width=self.controller.width // 2, height=self.controller.height, bg='black')
+            master=canvas_ct, width=self.controller.width // 2, height=self.controller.height, bg='black')
         self.origin.grid(row=1, column=0)
+        self.origin.set_callback(self.transform)
 
         product_label = tk.Label(canvas_ct, text='Product', font=('Arial', 25))
         product_label.grid(row=0, column=1)
-        self.product = tk.Canvas(
+        self.product = tk.Label(
             canvas_ct, width=self.controller.width // 2, height=self.controller.height, bg='black')
         self.product.grid(row=1, column=1)
 
@@ -42,10 +43,6 @@ class TransformFrame(tk.Frame):
         reset_button = tk.Button(
             button_ct, text='Reset', command=self.origin.draw_vertexes)
         reset_button.pack(side=tk.LEFT)
-
-        transform_button = tk.Button(
-            button_ct, text='Transform', command=self.transform)
-        transform_button.pack(side=tk.LEFT)
 
         previous_button = tk.Button(
             button_ct, text='Previous', command=lambda: self.move(False))
@@ -86,9 +83,8 @@ class TransformFrame(tk.Frame):
         self.product_thumbnail = ImageTk.PhotoImage(
             make_thumbnail(image.product, size))
 
-        self.product.config(width=width, height=height)
-        self.product.create_image(
-            (0, 0), anchor=tk.NW, image=self.product_thumbnail)
+        self.product.config(image=self.product_thumbnail,
+                            width=width, height=height)
 
     def image_size(self, image):
         width = self.controller.width

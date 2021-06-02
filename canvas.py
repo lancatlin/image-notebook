@@ -14,6 +14,10 @@ class DragableCanvas(tk.Canvas):
         self.tag_bind('vertex', '<Button-1>', self.on_click)
         self.bind('<Motion>', self.on_motion)
         self.bind('<ButtonRelease-1>', self.on_release)
+        self.callback = None
+
+    def set_callback(self, callback):
+        self.callback = callback
 
     def draw_vertexes(self):
         self.delete('vertex')
@@ -48,3 +52,5 @@ class DragableCanvas(tk.Canvas):
 
     def on_release(self, event):
         self.selected = None
+        if self.callback:
+            self.callback()
