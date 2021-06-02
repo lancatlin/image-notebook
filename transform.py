@@ -11,24 +11,38 @@ class TransformFrame(tk.Frame):
         self.controller = controller
         self.margin = 10
         self.shape = (800, 800)
-        self.grid_rowconfigure(3)
-        self.grid_columnconfigure(2)
 
-        origin_label = tk.Label(self, text='Origin', font=('Arial', 25))
+        canvas_ct = tk.Frame(self)
+        canvas_ct.pack(side=tk.TOP)
+        canvas_ct.grid_rowconfigure(2)
+        canvas_ct.grid_columnconfigure(2)
+
+        origin_label = tk.Label(canvas_ct, text='Origin', font=('Arial', 25))
         origin_label.grid(row=0, column=0)
         self.origin = DragableCanvas(
-            self, width=self.controller.width // 2, height=self.controller.height, bg='black')
+            canvas_ct, width=self.controller.width // 2, height=self.controller.height, bg='black')
         self.origin.grid(row=1, column=0)
 
-        product_label = tk.Label(self, text='Product', font=('Arial', 25))
+        product_label = tk.Label(canvas_ct, text='Product', font=('Arial', 25))
         product_label.grid(row=0, column=1)
         self.product = tk.Canvas(
-            self, width=self.controller.width // 2, height=self.controller.height, bg='black')
+            canvas_ct, width=self.controller.width // 2, height=self.controller.height, bg='black')
         self.product.grid(row=1, column=1)
 
-        button = tk.Button(self, text='Manage',
-                           command=lambda: controller.switch_frame('ManageFrame'))
-        button.grid(row=2)
+        button_ct = tk.Frame(self)
+        button_ct.pack(side=tk.BOTTOM)
+
+        manage = tk.Button(
+            button_ct, text='Manage',
+            command=lambda: controller.switch_frame('ManageFrame'))
+        manage.pack(side=tk.LEFT)
+
+        previous_button = tk.Button(button_ct, text='Previous')
+        previous_button.pack(side=tk.LEFT)
+
+        next_button = tk.Button(button_ct, text='Next')
+        next_button.pack(side=tk.LEFT)
+
         self.show_image('test-data/2.jpg')
 
     def show_image(self, image_path):

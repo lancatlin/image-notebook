@@ -5,7 +5,6 @@ class DragableCanvas(tk.Canvas):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.r = 10
-        self.vertexes = []
         self.selected = None
 
         self.tag_bind('vertex', '<Button-1>', self.on_click)
@@ -13,8 +12,9 @@ class DragableCanvas(tk.Canvas):
         self.bind('<ButtonRelease-1>', self.on_release)
 
     def draw_vertexes(self):
+        self.delete('vertex')
         r = self.r
-        self.vertexes = [
+        [
             self.create_oval(
                 x-r, y-r, x+r, y+r, fill='green', tags=('vertex'))
             for x, y in [
@@ -23,7 +23,6 @@ class DragableCanvas(tk.Canvas):
         ]
 
     def on_click(self, event):
-        print(event, event.x, event.y)
         self.selected = self.find_closest(event.x, event.y)
 
     def on_motion(self, event):
