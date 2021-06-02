@@ -2,6 +2,7 @@ import tkinter as tk
 from welcome import WelcomeFrame
 from transform import TransformFrame
 from manage import ManageFrame
+from image import Image
 
 
 class Application(tk.Tk):
@@ -36,5 +37,9 @@ class Application(tk.Tk):
 
 if __name__ == "__main__":
     app = Application()
+    app.set_images([
+        Image(f'test-data/{f}') for f in ('1.jpg', '2.jpg', '3.png')
+    ])
+    app.switch_frame('TransformFrame')
     app.wm_title('Image Notebook')
     app.mainloop()

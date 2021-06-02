@@ -1,6 +1,5 @@
 import tkinter as tk
 import turtle
-import cv2
 from PIL import ImageTk
 from image import Image, make_thumbnail
 from canvas import DragableCanvas
@@ -44,6 +43,10 @@ class TransformFrame(tk.Frame):
             button_ct, text='Reset', command=self.origin.draw_vertexes)
         reset_button.pack(side=tk.LEFT)
 
+        transform_button = tk.Button(
+            button_ct, text='Transform', command=self.transform)
+        transform_button.pack(side=tk.LEFT)
+
         previous_button = tk.Button(
             button_ct, text='Previous', command=lambda: self.move(False))
         previous_button.pack(side=tk.LEFT)
@@ -54,13 +57,16 @@ class TransformFrame(tk.Frame):
 
     def show(self):
         self.current = 0
-        self.show_image(0)
+        self.show_image()
 
-    def show_image(self, index):
+    def current_image(self):
+        return self.controller.images[self.current]
+
+    def show_image(self):
         if not self.controller.images:
             return
 
-        image = self.controller.images[index]
+        image = self.current_image()
         size = self.image_size(image)
         width, height = size
 
@@ -71,9 +77,12 @@ class TransformFrame(tk.Frame):
             (0, 0), anchor=tk.NW, image=self.thumbnail)
         self.origin.draw_vertexes()
 
+        self.product_thumbnail = ImageTk.PhotoImage(
+            make_thumbnail(image.product, size))
+
         self.product.config(width=width, height=height)
         self.product.create_image(
-            (0, 0), anchor=tk.NW, image=self.thumbnail)
+            (0, 0), anchor=tk.NW, image=self.product_thumbnail)
 
     def image_size(self, image):
         width = self.controller.width
@@ -91,4 +100,10 @@ class TransformFrame(tk.Frame):
             self.current -= 1
         self.current %= len(self.controller.images)
 
-        self.show_image(self.current)
+        self.show_image()
+
+    def transform(self):
+        coords = self.origin.get_coords()
+        width, _ = self.image_size(self.current_image())
+        self.current_image().transform(coords, width)
+        self.show_image()
