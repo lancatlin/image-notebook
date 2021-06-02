@@ -8,7 +8,7 @@ def center(coords):
 class DragableCanvas(tk.Canvas):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.r = 10
+        self.r = 15
         self.selected = None
 
         self.tag_bind('vertex', '<Button-1>', self.on_click)

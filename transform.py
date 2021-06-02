@@ -37,6 +37,10 @@ class TransformFrame(tk.Frame):
             command=lambda: controller.switch_frame('ManageFrame'))
         manage.pack(side=tk.LEFT)
 
+        reset_button = tk.Button(
+            button_ct, text='Reset', command=self.origin.draw_vertexes)
+        reset_button.pack(side=tk.LEFT)
+
         previous_button = tk.Button(button_ct, text='Previous')
         previous_button.pack(side=tk.LEFT)
 
