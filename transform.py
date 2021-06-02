@@ -1,6 +1,8 @@
 import tkinter as tk
 import turtle
-from PIL import Image, ImageTk
+import cv2
+from PIL import ImageTk
+from image import Image, make_thumbnail
 from canvas import DragableCanvas
 
 
@@ -11,6 +13,7 @@ class TransformFrame(tk.Frame):
         self.controller = controller
         self.margin = 10
         self.shape = (800, 800)
+        self.image = Image('test-data/2.jpg')
 
         canvas_ct = tk.Frame(self)
         canvas_ct.pack(side=tk.TOP)
@@ -47,14 +50,13 @@ class TransformFrame(tk.Frame):
         next_button = tk.Button(button_ct, text='Next')
         next_button.pack(side=tk.LEFT)
 
-        self.show_image('test-data/2.jpg')
+        self.show_image()
 
-    def show_image(self, image_path):
-        img = Image.open(image_path)
-        width, height = self.image_size(img)
+    def show_image(self):
+        size = self.image_size(self.image)
+        width, height = size
 
-        img.thumbnail(self.image_size(img), Image.NEAREST)
-        self.img = ImageTk.PhotoImage(img)
+        self.img = ImageTk.PhotoImage(make_thumbnail(self.image.origin, size))
 
         self.origin.config(width=width, height=height)
         self.origin.create_image(

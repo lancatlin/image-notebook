@@ -28,11 +28,14 @@ class DragableCanvas(tk.Canvas):
         self.draw_lines()
 
     def draw_lines(self):
-        coords = [center(self.coords(vertex))
-                  for vertex in self.find_withtag('vertex')]
+        coords = self.get_coords()
         coords.append(coords[0])
         self.delete('lines')
         self.create_line(*coords, tags=('lines',), fill='green')
+
+    def get_coords(self):
+        return [center(self.coords(vertex))
+                for vertex in self.find_withtag('vertex')]
 
     def on_click(self, event):
         self.selected = self.find_closest(event.x, event.y)
