@@ -77,6 +77,12 @@ class TransformFrame(tk.Frame):
             (0, 0), anchor=tk.NW, image=self.thumbnail)
         self.origin.draw_vertexes()
 
+        self.show_product()
+
+    def show_product(self):
+        image = self.current_image()
+        size = self.image_size(image)
+        width, height = size
         self.product_thumbnail = ImageTk.PhotoImage(
             make_thumbnail(image.product, size))
 
@@ -106,4 +112,4 @@ class TransformFrame(tk.Frame):
         coords = self.origin.get_coords()
         width, _ = self.image_size(self.current_image())
         self.current_image().transform(coords, width)
-        self.show_image()
+        self.show_product()
