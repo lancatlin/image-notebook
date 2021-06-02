@@ -13,7 +13,7 @@ class TransformFrame(tk.Frame):
         self.controller = controller
         self.margin = 10
         self.shape = (800, 800)
-        self.image = Image('test-data/2.jpg')
+        self.current = 0
 
         canvas_ct = tk.Frame(self)
         canvas_ct.pack(side=tk.TOP)
@@ -44,31 +44,51 @@ class TransformFrame(tk.Frame):
             button_ct, text='Reset', command=self.origin.draw_vertexes)
         reset_button.pack(side=tk.LEFT)
 
-        previous_button = tk.Button(button_ct, text='Previous')
+        previous_button = tk.Button(
+            button_ct, text='Previous', command=lambda: self.move(False))
         previous_button.pack(side=tk.LEFT)
 
-        next_button = tk.Button(button_ct, text='Next')
+        next_button = tk.Button(button_ct, text='Next',
+                                command=lambda: self.move(True))
         next_button.pack(side=tk.LEFT)
 
-        self.show_image()
+    def show(self):
+        self.current = 0
+        self.show_image(0)
 
-    def show_image(self):
-        size = self.image_size(self.image)
+    def show_image(self, index):
+        if not self.controller.images:
+            return
+
+        image = self.controller.images[index]
+        size = self.image_size(image)
         width, height = size
 
-        self.img = ImageTk.PhotoImage(make_thumbnail(self.image.origin, size))
+        self.thumbnail = ImageTk.PhotoImage(make_thumbnail(image.origin, size))
 
         self.origin.config(width=width, height=height)
         self.origin.create_image(
-            (0, 0), anchor=tk.NW, image=self.img)
+            (0, 0), anchor=tk.NW, image=self.thumbnail)
         self.origin.draw_vertexes()
 
         self.product.config(width=width, height=height)
         self.product.create_image(
-            (0, 0), anchor=tk.NW, image=self.img)
+            (0, 0), anchor=tk.NW, image=self.thumbnail)
 
     def image_size(self, image):
         width = self.controller.width
         image_width = (width - 2*self.margin) // 2
         image_height = int(image_width * (image.height / image.width))
         return image_width, image_height
+
+    def move(self, direction=True):
+        '''Move to the next image or previous image
+        direction: True is next, False is previous
+        '''
+        if direction:
+            self.current += 1
+        else:
+            self.current -= 1
+        self.current %= len(self.controller.images)
+
+        self.show_image(self.current)

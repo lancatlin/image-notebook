@@ -22,15 +22,16 @@ class Application(tk.Tk):
             self.frames[F.__name__] = frame
             frame.grid(row=0, column=0, sticky='nsew')
 
-        self.switch_frame('TransformFrame')
+        self.switch_frame('WelcomeFrame')
 
     def switch_frame(self, frame_name):
         frame = self.frames[frame_name]
         frame.tkraise()
 
     def set_images(self, images):
+        '''Being called by welcome frame'''
         self.images = images
-        print([str(image) for image in images])
+        self.frames['TransformFrame'].show()
 
 
 if __name__ == "__main__":
