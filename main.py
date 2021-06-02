@@ -7,6 +7,9 @@ from manage import ManageFrame
 class Application(tk.Tk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.width = 1600
+        self.height = 900
+        self.geometry(f'{self.width}x{self.height}')
         container = tk.Frame(self)
         container.pack(fill='both', expand=True, side='top')
         container.grid_rowconfigure(0, weight=1)
@@ -19,7 +22,7 @@ class Application(tk.Tk):
             self.frames[F.__name__] = frame
             frame.grid(row=0, column=0, sticky='nsew')
 
-        self.switch_frame('WelcomeFrame')
+        self.switch_frame('TransformFrame')
 
     def switch_frame(self, frame_name):
         frame = self.frames[frame_name]
