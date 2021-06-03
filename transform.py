@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter.filedialog import asksaveasfilename
 import turtle
 from PIL import ImageTk
 from image import Image, make_thumbnail
@@ -51,6 +52,10 @@ class TransformFrame(tk.Frame):
         next_button = tk.Button(button_ct, text='Next',
                                 command=lambda: self.move(True))
         next_button.pack(side=tk.LEFT)
+
+        export_button = tk.Button(
+            button_ct, text='Export', command=self.export)
+        export_button.pack(side=tk.LEFT)
 
     def show(self):
         self.current = 0
@@ -109,3 +114,13 @@ class TransformFrame(tk.Frame):
         width, _ = self.image_size(self.current_image())
         self.current_image().transform(coords, width)
         self.show_product()
+
+    def export(self):
+        filename = asksaveasfilename(
+            defaultextension='.pdf', filetypes=(('PDF Files', ('*.pdf',)),))
+        print(filename)
+        if not filename:
+            return
+        images = [image.product for image in self.controller.images]
+        print(images)
+        images[0].save(filename, save_all=True, append_images=images[1:])
