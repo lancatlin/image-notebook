@@ -3,12 +3,6 @@ import numpy as np
 import cv2
 
 
-def make_thumbnail(img, size):
-    result = img.copy()
-    result.thumbnail(size, PImage.NEAREST)
-    return result
-
-
 class Image:
     def __init__(self, filename):
         self.filename = filename
@@ -16,6 +10,7 @@ class Image:
         self.product = self.origin
         self.width = self.origin.width
         self.height = self.origin.height
+        self.coords = []
 
     def __str__(self):
         return self.filename.split('/')[-1]
@@ -26,6 +21,7 @@ class Image:
         coords: the coords picked from canvas
         @param
         '''
+        self.coords = coords
         coords = np.float32(coords) / thumbnail_width * self.width
         output = np.float32(
             [[0, 0], [0, self.height], [self.width, self.height], [self.width, 0]])
