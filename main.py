@@ -40,6 +40,7 @@ if __name__ == "__main__":
     app.set_images([
         Image(f'test-data/{f}') for f in ('1.jpg', '2.jpg', '3.png')
     ])
-    app.switch_frame('TransformFrame')
+    app.switch_frame('ManageFrame')
+    app.frames['ManageFrame'].show()
     app.wm_title('Image Notebook')
     app.mainloop()
