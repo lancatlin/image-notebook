@@ -43,6 +43,5 @@ if __name__ == "__main__":
         Image(os.path.join('test-data', f)) for f in os.listdir('test-data')
     ])
     app.switch_frame('ManageFrame')
-    app.frames['ManageFrame'].show()
     app.wm_title('Image Notebook')
     app.mainloop()

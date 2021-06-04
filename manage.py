@@ -20,16 +20,19 @@ class ManageFrame(Frame):
         button.pack()
         image_frame = ScrollableFrame(self)
         image_frame.pack(fill='both', expand=True)
-        image_frame.grid_columnconfigure(COLUMN)
-        self.image_frame = image_frame
+        image_frame.scrollable_frame.grid_columnconfigure(COLUMN)
+
+        self.image_frame = image_frame.scrollable_frame
         self.images = []
 
     def on_switch(self):
-        for i in range(len(self.controller.images)):
-            image = ImageFrame(
-                self.image_frame.scrollable_frame, self.controller)
-            image.grid(row=i//COLUMN, column=i % COLUMN)
-            self.images.append(image)
+        if not self.images:
+            for i in range(len(self.controller.images)):
+                image = ImageFrame(
+                    self.image_frame, self.controller)
+                image.grid(row=i//COLUMN, column=i % COLUMN)
+                self.images.append(image)
+        self.show()
 
     def show(self):
         for i, image in enumerate(self.images):
