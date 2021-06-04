@@ -39,9 +39,11 @@ class Application(tk.Tk):
 
 if __name__ == "__main__":
     app = Application()
+    '''
     app.set_images([
         Image(os.path.join('test-data', f)) for f in os.listdir('test-data')
     ])
     app.switch_frame('ManageFrame')
+    '''
     app.wm_title('Image Notebook')
     app.mainloop()
