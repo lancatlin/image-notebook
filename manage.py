@@ -29,7 +29,10 @@ class ManageFrame(Frame):
         if not self.images:
             for i in range(len(self.controller.images)):
                 image = ImageFrame(
-                    self.image_frame, self.controller, self.show)
+                    master=self.image_frame,
+                    controller=self.controller,
+                    on_update=self.show,
+                    on_pop=self.pop)
                 image.grid(row=i//COLUMN, column=i % COLUMN)
                 self.images.append(image)
         self.show()
@@ -38,16 +41,22 @@ class ManageFrame(Frame):
         for i, image in enumerate(self.images):
             image.set_image(i)
 
+    def pop(self):
+        image = self.images[-1]
+        image.destroy()
+        del self.images[-1]
+
 
 class ImageFrame(tk.Frame):
-    def __init__(self, master, controller, callback):
+    def __init__(self, master, controller, on_update, on_pop):
         super().__init__(master)
         self.controller = controller
         self.image = None
         self.grid_rowconfigure(3)
         self.grid_columnconfigure(1)
         self.index = None
-        self.callback = callback
+        self.on_update = on_update
+        self.on_pop = on_pop
 
         self.canvas = PreviewImage(
             controller=controller, master=self)
@@ -63,7 +72,7 @@ class ImageFrame(tk.Frame):
             buttons, text='<', command=lambda: self.switch(self.index-1))
         backward.pack(side=tk.LEFT)
 
-        delete = tk.Button(buttons, text='X')
+        delete = tk.Button(buttons, text='X', command=self.delete)
         delete.pack(side=tk.LEFT)
 
         forward = tk.Button(buttons, text='>',
@@ -79,7 +88,12 @@ class ImageFrame(tk.Frame):
     def switch(self, dest):
         images = self.controller.images
         images[self.index], images[dest] = images[dest], images[self.index]
-        self.callback()
+        self.on_update()
+
+    def delete(self):
+        del self.controller.images[self.index]
+        self.on_pop()
+        self.on_update()
 
 
 class PreviewImage(ImageCanvas):
