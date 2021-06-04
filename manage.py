@@ -29,7 +29,7 @@ class ManageFrame(Frame):
         if not self.images:
             for i in range(len(self.controller.images)):
                 image = ImageFrame(
-                    self.image_frame, self.controller)
+                    self.image_frame, self.controller, self.show)
                 image.grid(row=i//COLUMN, column=i % COLUMN)
                 self.images.append(image)
         self.show()
@@ -40,12 +40,14 @@ class ManageFrame(Frame):
 
 
 class ImageFrame(tk.Frame):
-    def __init__(self, master, controller):
+    def __init__(self, master, controller, callback):
         super().__init__(master)
         self.controller = controller
         self.image = None
         self.grid_rowconfigure(3)
         self.grid_columnconfigure(1)
+        self.index = None
+        self.callback = callback
 
         self.canvas = PreviewImage(
             controller=controller, master=self)
@@ -57,19 +59,27 @@ class ImageFrame(tk.Frame):
         buttons = tk.Frame(self)
         buttons.grid(row=2)
 
-        backward = tk.Button(buttons, text='<')
+        backward = tk.Button(
+            buttons, text='<', command=lambda: self.switch(self.index-1))
         backward.pack(side=tk.LEFT)
 
         delete = tk.Button(buttons, text='X')
         delete.pack(side=tk.LEFT)
 
-        forward = tk.Button(buttons, text='>')
+        forward = tk.Button(buttons, text='>',
+                            command=lambda: self.switch(self.index+1))
         forward.pack(side=tk.LEFT)
 
     def set_image(self, image_index):
+        self.index = image_index
         image = self.controller.images[image_index]
         self.label.config(text=image.name)
         self.canvas.show_image(image)
+
+    def switch(self, dest):
+        images = self.controller.images
+        images[self.index], images[dest] = images[dest], images[self.index]
+        self.callback()
 
 
 class PreviewImage(ImageCanvas):
