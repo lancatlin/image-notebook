@@ -1,10 +1,11 @@
 import tkinter as tk
 from tkinter.filedialog import asksaveasfilename
 import turtle
+from frame import Frame
 from canvas import ImageCanvas, DragableCanvas
 
 
-class TransformFrame(tk.Frame):
+class TransformFrame(Frame):
     def __init__(self, master, controller):
         super().__init__(master)
         self.master = master
@@ -58,7 +59,7 @@ class TransformFrame(tk.Frame):
     def reset(self):
         self.current = 0
 
-    def show(self):
+    def on_switch(self):
         self.origin.show_image(self.current_image())
         self.product.show_image(self.current_image())
 
@@ -75,7 +76,7 @@ class TransformFrame(tk.Frame):
             self.current -= 1
         self.current %= len(self.controller.images)
 
-        self.show()
+        self.on_switch()
 
     def transform(self):
         coords = self.origin.get_coords()

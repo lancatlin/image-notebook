@@ -6,6 +6,7 @@ import cv2
 class Image:
     def __init__(self, filename):
         self.filename = filename
+        self.name = filename.split('/')[-1]
         self.origin = PImage.open(filename)
         self.product = self.origin
         self.width = self.origin.width

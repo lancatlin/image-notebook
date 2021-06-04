@@ -1,9 +1,10 @@
 import tkinter as tk
 from tkinter.filedialog import askopenfilenames
 from image import Image
+from frame import Frame
 
 
-class WelcomeFrame(tk.Frame):
+class WelcomeFrame(Frame):
     def __init__(self, master, controller):
         super().__init__(master)
         self.master = master

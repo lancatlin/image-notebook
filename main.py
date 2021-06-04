@@ -1,4 +1,6 @@
+import os
 import tkinter as tk
+
 from welcome import WelcomeFrame
 from transform import TransformFrame
 from manage import ManageFrame
@@ -28,17 +30,17 @@ class Application(tk.Tk):
     def switch_frame(self, frame_name):
         frame = self.frames[frame_name]
         frame.tkraise()
+        frame.on_switch()
 
     def set_images(self, images):
         '''Being called by welcome frame'''
         self.images = images
-        self.frames['TransformFrame'].show()
 
 
 if __name__ == "__main__":
     app = Application()
     app.set_images([
-        Image(f'test-data/{f}') for f in ('1.jpg', '2.jpg', '3.png')
+        Image(os.path.join('test-data', f)) for f in os.listdir('test-data')
     ])
     app.switch_frame('ManageFrame')
     app.frames['ManageFrame'].show()
