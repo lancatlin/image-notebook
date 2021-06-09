@@ -1,4 +1,5 @@
 import tkinter as tk
+import numpy as np
 from PIL import ImageTk
 from styles import MARGIN
 from image import Image
@@ -73,8 +74,9 @@ class DragableCanvas(ImageCanvas):
         self.delete('vertex')
         r = self.r
         coords = self.image.coords
-        if not coords:
+        if coords is None:
             coords = self.default_vertexes()
+        coords = self.coords_transform(coords)
         [
             self.create_oval(
                 x-r, y-r, x+r, y+r, fill='green', tags=('vertex'))
@@ -82,13 +84,16 @@ class DragableCanvas(ImageCanvas):
         ]
         self.draw_lines()
 
+    def coords_transform(self, coords):
+        return coords * self.width / self.image.width
+
     def default_vertexes(self):
-        width = self.width
-        height = self.height
-        return [
+        width = self.image.width
+        height = self.image.height
+        return np.array([
             (0, 0), (0, height),
-            (width, height), (width, 0)
-        ]
+            (width, height), (width, 0),
+        ])
 
     def reset(self):
         self.image.coords = self.default_vertexes()
@@ -97,13 +102,15 @@ class DragableCanvas(ImageCanvas):
 
     def draw_lines(self):
         coords = self.get_coords()
+        coords = self.coords_transform(coords).tolist()
         coords.append(coords[0])
         self.delete('lines')
         self.create_line(*coords, tags=('lines',), fill='green')
 
     def get_coords(self):
-        return [center(self.coords(vertex))
-                for vertex in self.find_withtag('vertex')]
+        coords = np.float32([center(self.coords(vertex))
+                             for vertex in self.find_withtag('vertex')]) * self.image.width / self.width
+        return coords
 
     def on_click(self, event):
         self.selected = self.find_closest(event.x, event.y)
@@ -116,5 +123,6 @@ class DragableCanvas(ImageCanvas):
 
     def on_release(self, event):
         self.selected = None
+        print(self.get_coords())
         if self.callback:
             self.callback()

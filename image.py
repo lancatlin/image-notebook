@@ -11,19 +11,18 @@ class Image:
         self.product = self.origin
         self.width = self.origin.width
         self.height = self.origin.height
-        self.coords = []
+        self.coords = None
 
     def __str__(self):
         return self.filename.split('/')[-1]
 
-    def transform(self, coords, thumbnail_width):
+    def transform(self, coords):
         ''' Transform the origin image to product
         @param
         coords: the coords picked from canvas
         @param
         '''
         self.coords = coords
-        coords = np.float32(coords) / thumbnail_width * self.width
         output = np.float32(
             [[0, 0], [0, self.height], [self.width, self.height], [self.width, 0]])
         img = np.array(self.origin)

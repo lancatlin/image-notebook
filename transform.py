@@ -80,7 +80,7 @@ class TransformFrame(Frame):
 
     def transform(self):
         coords = self.origin.get_coords()
-        self.current_image().transform(coords, self.origin.width)
+        self.current_image().transform(coords)
         self.product.show_image(self.current_image())
 
     def export(self):
