@@ -38,9 +38,15 @@ class ImageCanvas(tk.Canvas):
         self.thumbnail = ImageTk.PhotoImage(image=result)
 
     def image_size(self, image):
-        width = self.controller.width
-        image_width = (width - 2*MARGIN) // 2
-        image_height = int(image_width * (image.height / image.width))
+        if image.width > image.height:
+            width = self.controller.width
+            image_width = (width - 2*MARGIN) // 2
+            image_height = int(image_width * (image.height / image.width))
+            return image_width, image_height
+
+        height = self.controller.height
+        image_height = (height * 3) // 4
+        image_width = int(image_height * (image.width / image.height))
         return image_width, image_height
 
 
