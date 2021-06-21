@@ -68,8 +68,8 @@ class TransformFrame(Frame):
         self.current = 0
 
     def on_switch(self):
-        print(id(self.current_image()))
         self.origin.show_image(self.current_image())
+        self.origin.auto()
         self.product.show_image(self.current_image())
 
     def current_image(self):

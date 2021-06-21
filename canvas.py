@@ -83,9 +83,11 @@ class DragableCanvas(ImageCanvas):
         self.finder.setup(self.image.array(), self.get_coords())
         print(self.finder.lowest)
         print(self.finder.highest)
+        self.callback()
 
     def auto(self):
         self.draw_vertexes(self.finder.vertexes(self.image.array()))
+        self.learn()
 
     def set_callback(self, callback):
         self.callback = callback
@@ -136,5 +138,3 @@ class DragableCanvas(ImageCanvas):
     def on_release(self, event):
         self.selected = None
         self.learn()
-        if self.callback:
-            self.callback()
