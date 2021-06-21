@@ -22,7 +22,7 @@ class VertexFinder:
 
     def setup(self, img, coords):
         mask = np.ones(img.shape[:2], dtype=np.uint8)
-        cv2.fillConvexPoly(mask, coords, 0)
+        cv2.fillConvexPoly(mask, coords.astype(np.int32), 0)
         self.set_threshold(img, mask)
 
     def set_threshold(self, img, mask, threshold=0.001):
@@ -46,25 +46,24 @@ class VertexFinder:
             plt.plot(histr, color=['b', 'g', 'r'][i])
             plt.xlim([0, 256])
 
-    def mask(self, img):
+    def set_mask(self, img):
         '''Mask the img not in the color range'''
         mask = cv2.inRange(img, self.lowest, self.highest)
-        kernel = np.ones([7, 7], dtype=np.uint8)
-        mask = cv2.dilate(mask, kernel, iterations=2)
-        return 255 - mask
+        kernel = np.ones([9, 9], dtype=np.uint8)
+        mask = cv2.dilate(mask, kernel, iterations=3)
+        self.mask = 255 - mask
 
     def vertexes(self, img):
         '''Get the vertexes by the color threshold
             return the closest points to the four corners'''
         row, col = img.shape[:2]
         print(row, col)
-        mask = self.mask(img)
         result = []
 
         for cx, cy in [
                 (0, 0), (0, row), (col, row), (col, 0)]:
-            result.append(closest(mask, cx, cy))
-        return result
+            result.append(closest(self.mask, cx, cy))
+        return np.array(result, dtype=np.int32)
 
 
 if __name__ == "__main__":
@@ -79,11 +78,10 @@ if __name__ == "__main__":
 
     test_img = cv2.imread('test-data/test.jpg', -1)
 
+    finder.set_mask(test_img)
     vertexes = finder.vertexes(test_img)
 
-    mask = finder.mask(test_img)
-
-    test_img[mask == 0] = 0
+    test_img[finder.mask == 0] = 0
 
     for center in vertexes:
         test_img = cv2.circle(test_img, center, 30, (255, 255, 200), -1)

@@ -40,6 +40,14 @@ class TransformFrame(Frame):
             command=lambda: controller.switch_frame('ManageFrame'))
         manage.pack(side=tk.LEFT)
 
+        learn = tk.Button(
+            button_ct, text='Learn', command=self.origin.learn)
+        learn.pack(side=tk.LEFT)
+
+        auto = tk.Button(
+            button_ct, text='Auto', command=self.origin.auto)
+        auto.pack(side=tk.LEFT)
+
         reset_button = tk.Button(
             button_ct, text='Reset', command=self.origin.reset)
         reset_button.pack(side=tk.LEFT)

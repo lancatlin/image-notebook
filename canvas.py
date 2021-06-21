@@ -4,6 +4,7 @@ from PIL import ImageTk
 from styles import MARGIN
 from image import Image
 from PIL import Image as PImage
+from vertexes import VertexFinder
 
 
 def center(coords):
@@ -63,9 +64,30 @@ class DragableCanvas(ImageCanvas):
         self.bind('<ButtonRelease-1>', self.on_release)
         self.callback = None
 
+        self.finder = VertexFinder()
+
     def show_image(self, image):
+        self.finder.set_mask(image.array())
         super().show_image(image)
         self.draw_vertexes()
+
+    def make_thumbnail(self):
+        '''Make a thumbnail of an PIL image'''
+        result = self.image.with_mask(self.finder.mask)
+
+        result.thumbnail((self.width, self.height), PImage.NEAREST)
+        self.thumbnail = ImageTk.PhotoImage(image=result)
+
+    def learn(self):
+        '''Setup the vertex finder to use current img and coords'''
+        self.finder.setup(self.image.array(), self.get_coords())
+        print(self.finder.lowest)
+        print(self.finder.highest)
+        self.show_image(self.image)
+
+    def auto(self):
+        self.image.coords = self.finder.vertexes(self.image.array())
+        self.show_image(self.image)
 
     def set_callback(self, callback):
         self.callback = callback
@@ -73,9 +95,10 @@ class DragableCanvas(ImageCanvas):
     def draw_vertexes(self):
         self.delete('vertex')
         r = self.r
+        if self.image.coords is None:
+            self.image.coords = self.finder.vertexes(self.image.array())
+
         coords = self.image.coords
-        if coords is None:
-            coords = self.default_vertexes()
         coords = self.coords_transform(coords)
         [
             self.create_oval(
@@ -87,16 +110,8 @@ class DragableCanvas(ImageCanvas):
     def coords_transform(self, coords):
         return coords * self.width / self.image.width
 
-    def default_vertexes(self):
-        width = self.image.width
-        height = self.image.height
-        return np.array([
-            (0, 0), (0, height),
-            (width, height), (width, 0),
-        ])
-
     def reset(self):
-        self.image.coords = self.default_vertexes()
+        self.image.reset()
         self.draw_vertexes()
         self.callback()
 
