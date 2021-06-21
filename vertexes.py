@@ -17,6 +17,10 @@ def closest(mask, cx, cy):
 
 class VertexFinder:
     def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.learned = False
         self.lowest = np.zeros((3,), dtype=np.uint8)
         self.highest = np.zeros((3,), dtype=np.uint8)
 
@@ -24,6 +28,7 @@ class VertexFinder:
         mask = np.ones(img.shape[:2], dtype=np.uint8)
         cv2.fillConvexPoly(mask, coords.astype(np.int32), 0)
         self.set_threshold(img, mask)
+        self.learned = True
 
     def set_threshold(self, img, mask, threshold=0.001):
         '''Set the color threshold from an image and mask'''

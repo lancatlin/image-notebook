@@ -68,7 +68,8 @@ class DragableCanvas(ImageCanvas):
 
     def switch_image(self, image):
         self.show_image(image)
-        if image.coords is None:
+        if image.coords is None and self.finder.learned:
+            print('auto')
             self.auto()
 
     def show_image(self, image):
@@ -97,7 +98,6 @@ class DragableCanvas(ImageCanvas):
         self.callback = callback
 
     def transform(self, coords=None):
-        print(coords)
         if coords is None:
             coords = self.get_coords()
         self.image.transform(coords.astype(np.float32))
