@@ -121,6 +121,7 @@ class DragableCanvas(ImageCanvas):
         return coords * self.width / self.image.width
 
     def reset(self):
+        self.finder.reset()
         self.image.reset()
         self.draw_vertexes()
         self.transform()
