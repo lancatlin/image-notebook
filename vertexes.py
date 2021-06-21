@@ -8,15 +8,13 @@ def detect_vertexes(img):
     return edges
 
 
-def histogram(img, mask, threshold=0.002):
+def histogram(img, mask, threshold=0.001):
     color = ('b', 'g', 'r')
     result = np.zeros((2, 3), dtype=np.uint8)
     for i, col in enumerate(color):
         histr = cv2.calcHist(
             images=[img], channels=[i], mask=mask, histSize=[257], ranges=[0, 256]
         ) / (img.shape[0] * img.shape[1])
-        begin = 0
-        end = 255
 
         for j, value in enumerate(histr):
             if value > threshold:
@@ -36,7 +34,8 @@ def histogram(img, mask, threshold=0.002):
 
 
 if __name__ == "__main__":
-    img = cv2.imread('test-data/test.jpg', -1)
+    plt.figure()
+    img = cv2.imread('test-data/train.jpg', -1)
     coords = np.array([[948.88104,  571.6861],
                        [842.7949,  2652.1519],
                        [3860.3545,  2652.1519],
@@ -46,9 +45,14 @@ if __name__ == "__main__":
     #mask = 1-mask
     hist = histogram(img, mask)
 
-    masked = cv2.inRange(img, hist[0], hist[1])
-    img[masked != 0] = 0
+    test_img = cv2.imread('test-data/test.jpg', -1)
 
-    cv2.imshow('', img)
+    masked = cv2.inRange(test_img, hist[0], hist[1])
+    test_img[masked != 0] = 0
+
+    test_img = cv2.cvtColor(test_img, cv2.COLOR_BGR2RGB)
+
+    plt.figure()
+    plt.imshow(test_img)
     plt.show()
     cv2.waitKey(0)
