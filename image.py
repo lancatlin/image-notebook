@@ -11,7 +11,7 @@ class Image:
         self.product = self.origin
         self.width = self.origin.width
         self.height = self.origin.height
-        self.coords = self.default_vertexes()
+        self.coords = None
 
     def set_coords(self, coords):
         print('I am', id(self))

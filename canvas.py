@@ -66,6 +66,11 @@ class DragableCanvas(ImageCanvas):
 
         self.finder = VertexFinder()
 
+    def switch_image(self, image):
+        self.show_image(image)
+        if image.coords is None:
+            self.auto()
+
     def show_image(self, image):
         self.finder.set_mask(image.array())
         super().show_image(image)
