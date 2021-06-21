@@ -10,7 +10,7 @@ def detect_vertexes(img):
 
 def histogram(img, mask, threshold=0.002):
     color = ('b', 'g', 'r')
-    result = {}
+    result = np.zeros((2, 3), dtype=np.uint8)
     for i, col in enumerate(color):
         histr = cv2.calcHist(
             images=[img], channels=[i], mask=mask, histSize=[257], ranges=[0, 256]
@@ -18,22 +18,21 @@ def histogram(img, mask, threshold=0.002):
         begin = 0
         end = 255
 
-        for i, value in enumerate(histr):
+        for j, value in enumerate(histr):
             if value > threshold:
-                begin = i
+                result[0, i] = j
                 break
 
-        for i, value in enumerate(np.flip(histr)):
+        for j, value in enumerate(np.flip(histr)):
             if value > threshold:
-                end = 255-i
+                result[1, i] = 255-j
                 break
-
-        result[col] = [begin, end]
 
         plt.plot(histr, color=col)
         plt.xlim([0, 256])
 
     print(result)
+    return result
 
 
 if __name__ == "__main__":
@@ -45,10 +44,11 @@ if __name__ == "__main__":
     mask = np.ones(img.shape[:2], dtype=np.uint8)
     cv2.fillConvexPoly(mask, coords, 0)
     #mask = 1-mask
-    histogram(img, mask)
+    hist = histogram(img, mask)
 
-    img[mask == 0] = 0
+    masked = cv2.inRange(img, hist[0], hist[1])
+    img[masked != 0] = 0
 
-    #cv2.imshow('', img)
+    cv2.imshow('', img)
     plt.show()
     cv2.waitKey(0)
