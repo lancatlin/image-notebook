@@ -69,7 +69,7 @@ class DragableCanvas(ImageCanvas):
     def show_image(self, image):
         self.finder.set_mask(image.array())
         super().show_image(image)
-        self.draw_vertexes()
+        self.draw_vertexes(self.image.coords)
 
     def make_thumbnail(self):
         '''Make a thumbnail of an PIL image'''
@@ -86,17 +86,23 @@ class DragableCanvas(ImageCanvas):
         self.callback()
 
     def auto(self):
-        self.draw_vertexes(self.finder.vertexes(self.image.array()))
-        self.learn()
+        self.transform(self.finder.vertexes(self.image.array()))
 
     def set_callback(self, callback):
         self.callback = callback
+
+    def transform(self, coords=None):
+        print(coords)
+        if coords is None:
+            coords = self.get_coords()
+        self.image.transform(coords.astype(np.float32))
+        self.callback()
 
     def draw_vertexes(self, coords=None):
         self.delete('vertex')
         r = self.r
         if coords is None:
-            coords = self.image.coords
+            coords = self.image.default_vertexes()
 
         coords = self.coords_transform(coords)
         [
@@ -112,7 +118,7 @@ class DragableCanvas(ImageCanvas):
     def reset(self):
         self.image.reset()
         self.draw_vertexes()
-        self.callback()
+        self.transform()
 
     def draw_lines(self):
         coords = self.get_coords()
@@ -137,4 +143,4 @@ class DragableCanvas(ImageCanvas):
 
     def on_release(self, event):
         self.selected = None
-        self.learn()
+        self.transform()

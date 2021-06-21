@@ -26,7 +26,7 @@ class VertexFinder:
         self.set_threshold(img, mask)
 
     def set_threshold(self, img, mask, threshold=0.001):
-        '''Set the color threshold from an image adistance(x, y, cx, cy)nd mask'''
+        '''Set the color threshold from an image and mask'''
         row, col = img.shape[:2]
         for i in range(3):
             histr = cv2.calcHist(
@@ -57,7 +57,6 @@ class VertexFinder:
         '''Get the vertexes by the color threshold
             return the closest points to the four corners'''
         row, col = img.shape[:2]
-        print(row, col)
         result = []
 
         for cx, cy in [

@@ -41,7 +41,7 @@ class Image:
     def with_mask(self, mask):
         ''' mask the origin image '''
         img = self.array()
-        img[mask == 0] = 0
+        img[mask == 0] //= 2
         return self.toPIL(img)
 
     def transform(self, coords):

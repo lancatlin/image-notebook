@@ -24,7 +24,7 @@ class TransformFrame(Frame):
         self.origin = DragableCanvas(
             controller=self.controller, master=canvas_ct)
         self.origin.grid(row=1, column=0)
-        self.origin.set_callback(self.transform)
+        self.origin.set_callback(self.on_switch)
 
         product_label = tk.Label(canvas_ct, text='Product', font=('Arial', 25))
         product_label.grid(row=0, column=1)
@@ -69,7 +69,6 @@ class TransformFrame(Frame):
 
     def on_switch(self):
         self.origin.show_image(self.current_image())
-        self.origin.auto()
         self.product.show_image(self.current_image())
 
     def current_image(self):
@@ -86,12 +85,6 @@ class TransformFrame(Frame):
         self.current %= len(self.controller.images)
 
         self.on_switch()
-
-    def transform(self):
-        coords = self.origin.get_coords()
-        self.current_image().transform(coords)
-        self.origin.show_image(self.current_image())
-        self.product.show_image(self.current_image())
 
     def export(self):
         filename = asksaveasfilename(
