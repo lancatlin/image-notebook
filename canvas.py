@@ -83,22 +83,19 @@ class DragableCanvas(ImageCanvas):
         self.finder.setup(self.image.array(), self.get_coords())
         print(self.finder.lowest)
         print(self.finder.highest)
-        self.show_image(self.image)
 
     def auto(self):
-        self.image.coords = self.finder.vertexes(self.image.array())
-        self.show_image(self.image)
+        self.draw_vertexes(self.finder.vertexes(self.image.array()))
 
     def set_callback(self, callback):
         self.callback = callback
 
-    def draw_vertexes(self):
+    def draw_vertexes(self, coords=None):
         self.delete('vertex')
         r = self.r
-        if self.image.coords is None:
-            self.image.coords = self.finder.vertexes(self.image.array())
+        if coords is None:
+            coords = self.image.coords
 
-        coords = self.image.coords
         coords = self.coords_transform(coords)
         [
             self.create_oval(
@@ -138,6 +135,6 @@ class DragableCanvas(ImageCanvas):
 
     def on_release(self, event):
         self.selected = None
-        print(self.get_coords())
+        self.learn()
         if self.callback:
             self.callback()

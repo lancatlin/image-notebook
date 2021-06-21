@@ -68,6 +68,7 @@ class TransformFrame(Frame):
         self.current = 0
 
     def on_switch(self):
+        print(id(self.current_image()))
         self.origin.show_image(self.current_image())
         self.product.show_image(self.current_image())
 
@@ -89,6 +90,7 @@ class TransformFrame(Frame):
     def transform(self):
         coords = self.origin.get_coords()
         self.current_image().transform(coords)
+        self.origin.show_image(self.current_image())
         self.product.show_image(self.current_image())
 
     def export(self):

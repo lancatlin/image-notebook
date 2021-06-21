@@ -40,8 +40,8 @@ class Application(tk.Tk):
 if __name__ == "__main__":
     app = Application()
     app.set_images([
-        Image('test-data/test.jpg'),
         Image('test-data/train.jpg'),
+        Image('test-data/test.jpg'),
         # Image(os.path.join('test-data', f)) for f in os.listdir('test-data')
     ])
     app.switch_frame('TransformFrame')
