@@ -41,9 +41,10 @@ if __name__ == "__main__":
     app = Application()
     '''
     app.set_images([
-        Image(os.path.join('test-data', f)) for f in os.listdir('test-data')
+        Image('test-data/test.jpg'),
+        # Image(os.path.join('test-data', f)) for f in os.listdir('test-data')
     ])
-    app.switch_frame('ManageFrame')
+    app.switch_frame('TransformFrame')
     '''
     app.wm_title('Image Notebook')
     app.mainloop()
