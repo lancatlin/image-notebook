@@ -48,6 +48,10 @@ if __name__ == "__main__":
     test_img = cv2.imread('test-data/test.jpg', -1)
 
     masked = cv2.inRange(test_img, hist[0], hist[1])
+
+    kernel = np.ones([7, 7], dtype=np.uint8)
+    masked = cv2.dilate(masked, kernel)
+
     test_img[masked != 0] = 0
 
     test_img = cv2.cvtColor(test_img, cv2.COLOR_BGR2RGB)
