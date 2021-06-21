@@ -27,7 +27,11 @@ if __name__ == "__main__":
     cv2.fillConvexPoly(mask, coords, 0)
     #plt.imshow(mask, cmap='binary')
 
+    idx = (mask == 0)
+    img[idx] = 0
+
     histogram(img, mask)
     #plt.imshow(mask, cmap='gray')
-    #cv2.imshow('output', detect_vertexes(img))
+    cv2.imshow('', img)
     plt.show()
+    cv2.waitKey(0)
