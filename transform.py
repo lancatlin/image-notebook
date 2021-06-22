@@ -13,9 +13,10 @@ class TransformFrame(Frame):
         self.margin = 10
         self.shape = (800, 800)
         self.current = 0
+        self.grid_columnconfigure(1)
 
         canvas_ct = tk.Frame(self)
-        canvas_ct.pack(side=tk.TOP)
+        canvas_ct.grid(row=0)
         canvas_ct.grid_rowconfigure(2)
         canvas_ct.grid_columnconfigure(2)
 
@@ -32,8 +33,19 @@ class TransformFrame(Frame):
             controller=self.controller, master=canvas_ct)
         self.product.grid(row=1, column=1)
 
+        control_ct = tk.Frame(self)
+        control_ct.grid(row=1)
+
+        vertical = tk.Checkbutton(control_ct, text='Vertical')
+        vertical.pack(side=tk.LEFT)
+
+        shapes = ('origin', '4:3', '16:9', '21:9')
+        self.shape_var = tk.StringVar(control_ct, value=shapes[0])
+        shape = tk.OptionMenu(control_ct, self.shape_var, *shapes)
+        shape.pack(side=tk.LEFT)
+
         button_ct = tk.Frame(self)
-        button_ct.pack(side=tk.BOTTOM)
+        button_ct.grid(row=2)
 
         manage = tk.Button(
             button_ct, text='Manage',
