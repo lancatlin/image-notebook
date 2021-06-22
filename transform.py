@@ -81,8 +81,19 @@ class TransformFrame(Frame):
         export_button.pack(side=tk.LEFT)
 
     def change_aspect_ratio(self, *args):
-        print(self.vertical.get())
-        print(self.aspect_ratio_var.get())
+        vertical = self.vertical.get()
+        ratio = self.aspect_ratio_var.get()
+        result = 0
+        if ratio == 'origin':
+            result = self.current_image().width / self.current_image().height
+        else:
+            w, h = [int(n) for n in ratio.split(':')]
+            result = w / h
+        if vertical:
+            result = 1 / result
+        self.current_image().aspect_ratio = result
+        print(result)
+        self.on_switch()
 
     def reset(self):
         self.current = 0
