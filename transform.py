@@ -3,6 +3,7 @@ from tkinter.filedialog import asksaveasfilename
 import turtle
 from frame import Frame
 from canvas import ImageCanvas, DragableCanvas
+from controller import ImageController
 
 
 class TransformFrame(Frame):
@@ -25,13 +26,14 @@ class TransformFrame(Frame):
         self.origin = DragableCanvas(
             controller=self.controller, master=canvas_ct)
         self.origin.grid(row=1, column=0)
-        self.origin.set_callback(self.on_switch)
 
         product_label = tk.Label(canvas_ct, text='Product', font=('Arial', 25))
         product_label.grid(row=0, column=1)
         self.product = ImageCanvas(
             controller=self.controller, master=canvas_ct)
         self.product.grid(row=1, column=1)
+
+        self.image_controller = ImageController(self.origin, self.product)
 
         control_ct = tk.Frame(self)
         control_ct.grid(row=1)
@@ -57,15 +59,15 @@ class TransformFrame(Frame):
         manage.pack(side=tk.LEFT)
 
         learn = tk.Button(
-            button_ct, text='Learn', command=self.origin.learn)
+            button_ct, text='Learn', command=self.image_controller.learn)
         learn.pack(side=tk.LEFT)
 
         auto = tk.Button(
-            button_ct, text='Auto', command=self.origin.auto)
+            button_ct, text='Auto', command=self.image_controller.auto_command)
         auto.pack(side=tk.LEFT)
 
         reset_button = tk.Button(
-            button_ct, text='Reset', command=self.origin.reset)
+            button_ct, text='Reset', command=self.image_controller.reset)
         reset_button.pack(side=tk.LEFT)
 
         previous_button = tk.Button(
@@ -86,21 +88,22 @@ class TransformFrame(Frame):
         result = 0
         if ratio == 'origin':
             result = self.current_image().width / self.current_image().height
+            if (result > 1 and vertical) or (result < 1 and not vertical):
+                result = 1 / result
         else:
             w, h = [int(n) for n in ratio.split(':')]
             result = w / h
-        if vertical:
-            result = 1 / result
-        self.current_image().aspect_ratio = result
+            if vertical:
+                result = 1 / result
+        self.image_controller.set_aspect_ratio(result)
         print(result)
-        self.on_switch()
 
     def reset(self):
         self.current = 0
 
     def on_switch(self):
-        self.origin.show_image(self.current_image())
-        self.product.show_image(self.current_image())
+        self.image_controller.set_image(self.current_image())
+        self.change_aspect_ratio()
 
     def current_image(self):
         return self.controller.images[self.current]
@@ -115,7 +118,6 @@ class TransformFrame(Frame):
             self.current -= 1
         self.current %= len(self.controller.images)
 
-        self.origin.switch_image(self.current_image())
         self.on_switch()
 
     def export(self):

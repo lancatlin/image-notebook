@@ -14,17 +14,6 @@ class Image:
         self.aspect_ratio = 4/3  # self.width / self.height
         self.coords = None
 
-    def default_vertexes(self):
-        width = self.width
-        height = self.height
-        return np.array([
-            (0, 0), (0, height),
-            (width, height), (width, 0),
-        ])
-
-    def reset(self):
-        self.coords = self.default_vertexes()
-
     def __str__(self):
         return self.filename.split('/')[-1]
 

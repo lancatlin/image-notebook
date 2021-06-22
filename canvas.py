@@ -24,6 +24,7 @@ class ImageCanvas(tk.Canvas):
         self.config(width=self.width, height=self.height)
 
     def show_image(self, image):
+        '''Show an PIL Image'''
         self.image = image
         size = self.image_size(image)
         self.config_size(size)
@@ -35,7 +36,7 @@ class ImageCanvas(tk.Canvas):
 
     def make_thumbnail(self):
         '''Make a thumbnail of an PIL image'''
-        result = getattr(self.image, self.image_to_show).copy()
+        result = self.image.copy()
         result.thumbnail((self.width, self.height), PImage.NEAREST)
         self.thumbnail = ImageTk.PhotoImage(image=result)
 
@@ -53,8 +54,9 @@ class ImageCanvas(tk.Canvas):
 
 
 class DragableCanvas(ImageCanvas):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, controller, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.controller = controller
         self.r = 15
         self.selected = None
         self.image_to_show = 'origin'
@@ -62,48 +64,17 @@ class DragableCanvas(ImageCanvas):
         self.tag_bind('vertex', '<Button-1>', self.on_click)
         self.bind('<Motion>', self.on_motion)
         self.bind('<ButtonRelease-1>', self.on_release)
+
         self.callback = None
-
-        self.finder = VertexFinder()
-
-    def switch_image(self, image):
-        self.show_image(image)
-        if image.coords is None and self.finder.learned:
-            print('auto')
-            self.auto()
-
-    def show_image(self, image):
-        self.finder.set_mask(image.array())
-        super().show_image(image)
-        self.draw_vertexes(self.image.coords)
-
-    def make_thumbnail(self):
-        '''Make a thumbnail of an PIL image'''
-        result = self.image.with_mask(self.finder.mask)
-
-        result.thumbnail((self.width, self.height), PImage.NEAREST)
-        self.thumbnail = ImageTk.PhotoImage(image=result)
-
-    def learn(self):
-        '''Setup the vertex finder to use current img and coords'''
-        self.finder.setup(self.image.array(), self.get_coords())
-        print(self.finder.lowest)
-        print(self.finder.highest)
-        self.callback()
-
-    def auto(self):
-        self.transform(self.finder.vertexes())
 
     def set_callback(self, callback):
         self.callback = callback
 
-    def transform(self, coords=None):
-        if coords is None:
-            coords = self.get_coords()
-        self.image.transform(coords.astype(np.float32))
-        self.callback()
+    def show_image(self, image, coords):
+        super().show_image(image)
+        self.draw_vertexes(coords)
 
-    def draw_vertexes(self, coords=None):
+    def draw_vertexes(self, coords):
         self.delete('vertex')
         r = self.r
         if coords is None:
@@ -117,26 +88,12 @@ class DragableCanvas(ImageCanvas):
         ]
         self.draw_lines()
 
-    def coords_transform(self, coords):
-        return coords * self.width / self.image.width
-
-    def reset(self):
-        self.finder.reset()
-        self.image.reset()
-        self.draw_vertexes()
-        self.transform()
-
     def draw_lines(self):
         coords = self.get_coords()
         coords = self.coords_transform(coords).tolist()
         coords.append(coords[0])
         self.delete('lines')
         self.create_line(*coords, tags=('lines',), fill='green')
-
-    def get_coords(self):
-        coords = np.float32([center(self.coords(vertex))
-                             for vertex in self.find_withtag('vertex')]) * self.image.width / self.width
-        return coords
 
     def on_click(self, event):
         self.selected = self.find_closest(event.x, event.y)
@@ -149,4 +106,12 @@ class DragableCanvas(ImageCanvas):
 
     def on_release(self, event):
         self.selected = None
-        self.transform()
+        self.callback(self.get_coords())
+
+    def get_coords(self):
+        coords = np.float32([center(self.coords(vertex))
+                             for vertex in self.find_withtag('vertex')]) * self.image.width / self.width
+        return coords
+
+    def coords_transform(self, coords):
+        return coords * self.width / self.image.width
