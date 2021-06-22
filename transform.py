@@ -36,12 +36,16 @@ class TransformFrame(Frame):
         control_ct = tk.Frame(self)
         control_ct.grid(row=1)
 
-        vertical = tk.Checkbutton(control_ct, text='Vertical')
+        self.vertical = tk.IntVar()
+
+        vertical = tk.Checkbutton(
+            control_ct, variable=self.vertical, command=self.change_aspect_ratio, text='Vertical')
         vertical.pack(side=tk.LEFT)
 
         shapes = ('origin', '4:3', '16:9', '21:9')
-        self.shape_var = tk.StringVar(control_ct, value=shapes[0])
-        shape = tk.OptionMenu(control_ct, self.shape_var, *shapes)
+        self.aspect_ratio_var = tk.StringVar(control_ct, value=shapes[0])
+        shape = tk.OptionMenu(control_ct, self.aspect_ratio_var,
+                              *shapes, command=self.change_aspect_ratio)
         shape.pack(side=tk.LEFT)
 
         button_ct = tk.Frame(self)
@@ -76,11 +80,15 @@ class TransformFrame(Frame):
             button_ct, text='Export', command=self.export)
         export_button.pack(side=tk.LEFT)
 
+    def change_aspect_ratio(self, *args):
+        print(self.vertical.get())
+        print(self.aspect_ratio_var.get())
+
     def reset(self):
         self.current = 0
 
     def on_switch(self):
-        self.origin.switch_image(self.current_image())
+        self.origin.show_image(self.current_image())
         self.product.show_image(self.current_image())
 
     def current_image(self):
@@ -96,6 +104,7 @@ class TransformFrame(Frame):
             self.current -= 1
         self.current %= len(self.controller.images)
 
+        self.origin.switch_image(self.current_image())
         self.on_switch()
 
     def export(self):
