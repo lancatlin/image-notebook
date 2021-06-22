@@ -11,12 +11,8 @@ class Image:
         self.product = self.origin
         self.width = self.origin.width
         self.height = self.origin.height
+        self.aspect_ratio = 4/3  # self.width / self.height
         self.coords = None
-
-    def set_coords(self, coords):
-        print('I am', id(self))
-        print('set_coords', coords)
-        self.coords = coords
 
     def default_vertexes(self):
         width = self.width
@@ -51,10 +47,14 @@ class Image:
         @param
         '''
         self.coords = coords
+        w, h = self.output_shape()
         output = np.float32(
-            [[0, 0], [0, self.height], [self.width, self.height], [self.width, 0]])
+            [[0, 0], [0, h], [w, h], [w, 0]])
         img = self.array()
         M = cv2.getPerspectiveTransform(coords, output)
         result = cv2.warpPerspective(
-            img, M, (self.width, self.height), flags=cv2.INTER_LINEAR)
+            img, M, self.output_shape(), flags=cv2.INTER_LINEAR)
         self.product = self.toPIL(result)
+
+    def output_shape(self):
+        return int(self.height * self.aspect_ratio), self.height
