@@ -83,7 +83,7 @@ class ImageFrame(tk.Frame):
         self.index = image_index
         image = self.controller.images[image_index]
         self.label.config(text=image.name)
-        self.canvas.show_image(image)
+        self.canvas.show_image(image.product)
 
     def switch(self, dest):
         images = self.controller.images
