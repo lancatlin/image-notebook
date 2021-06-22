@@ -7,9 +7,9 @@ def distance(x, y, cx, cy):
     return (x-cx)**2 + (y-cy)**2
 
 
-def closest(mask, cx, cy):
+def closest(mask, cx, cy, value):
     '''Return the closest pixel to (cx, cy) which is 0'''
-    nonzero = cv2.findNonZero(mask)
+    nonzero = cv2.findNonZero((mask == value).astype(np.uint8))
     distances = (nonzero[:, :, 0] - cx) ** 2 + (nonzero[:, :, 1] - cy) ** 2
     idx = np.argmin(distances)
     return nonzero[idx][0]
@@ -53,20 +53,33 @@ class VertexFinder:
 
     def set_mask(self, img):
         '''Mask the img not in the color range'''
-        mask = cv2.inRange(img, self.lowest, self.highest)
+        mask = 255-cv2.inRange(img, self.lowest, self.highest)
         kernel = np.ones([9, 9], dtype=np.uint8)
-        mask = cv2.dilate(mask, kernel, iterations=3)
-        self.mask = 255 - mask
+        mask = cv2.erode(mask, kernel, iterations=1)
+        mask = cv2.dilate(mask, kernel, iterations=1)
+        self.mask = mask
 
-    def vertexes(self, img):
+    def vertexes(self):
         '''Get the vertexes by the color threshold
             return the closest points to the four corners'''
-        row, col = img.shape[:2]
+        row, col = self.mask.shape[:2]
         result = []
+
+        retval, labels, stats, centroids = cv2.connectedComponentsWithStats(
+            self.mask, connectivity=4)
+        print(stats)
+
+        idx, value = -1, 0
+        for i, s in enumerate(stats[1:]):
+            if s[4] > value:
+                idx = i+1
+                value = s[4]
+
+        print(stats[idx])
 
         for cx, cy in [
                 (0, 0), (0, row), (col, row), (col, 0)]:
-            result.append(closest(self.mask, cx, cy))
+            result.append(closest(labels, cx, cy, idx))
         return np.array(result, dtype=np.int32)
 
 
@@ -83,7 +96,7 @@ if __name__ == "__main__":
     test_img = cv2.imread('test-data/test.jpg', -1)
 
     finder.set_mask(test_img)
-    vertexes = finder.vertexes(test_img)
+    vertexes = finder.vertexes()
 
     test_img[finder.mask == 0] = 0
 

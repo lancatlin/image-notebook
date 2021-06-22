@@ -92,7 +92,7 @@ class DragableCanvas(ImageCanvas):
         self.callback()
 
     def auto(self):
-        self.transform(self.finder.vertexes(self.image.array()))
+        self.transform(self.finder.vertexes())
 
     def set_callback(self, callback):
         self.callback = callback
