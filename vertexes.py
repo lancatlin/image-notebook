@@ -30,7 +30,7 @@ class VertexFinder:
         self.learned = False
         self.lowest = np.zeros((3,), dtype=np.uint8)
         self.highest = np.zeros((3,), dtype=np.uint8)
-        self.threshold = []
+        self.threshold = np.zeros((3, 257), dtype=np.uint8)
 
     def setup(self, img, coords):
         mask = np.ones(img.shape[:2], dtype=np.uint8)
@@ -41,30 +41,22 @@ class VertexFinder:
     def set_threshold(self, img, mask, threshold=0.001):
         '''Set the color threshold from an image and mask'''
         row, col = img.shape[:2]
+        plt.figure()
+        self.threshold = np.zeros((3, 257), dtype=np.uint8)
         for i in range(3):
             histr = cv2.calcHist(
                 images=[img], channels=[i], mask=mask, histSize=[257], ranges=[0, 256]
             ) / (row * col)
 
-            for j, value in enumerate(histr):
-                if value > threshold:
-                    self.lowest[i] = j
-                    break
-
-            for j, value in enumerate(np.flip(histr)):
-                if value > threshold:
-                    self.highest[i] = 255-j
-                    break
+            self.threshold[i][histr[:, 0] > threshold] = 1
 
             plt.plot(histr, color=['b', 'g', 'r'][i])
+            #plt.plot(self.threshold[i], color=['b', 'g', 'r'][i])
             plt.xlim([0, 256])
 
     def set_mask(self, img):
         '''Mask the img not in the color range'''
-        mask = np.zeros((3, 256), dtype=np.uint8)
-        for i in range(3):
-            mask[i][self.lowest[i]:self.highest[i]] = 1
-        masked = 1-filter(img, mask)
+        masked = 1-filter(img, self.threshold)
         kernel = np.ones([9, 9], dtype=np.uint8)
         masked = cv2.erode(masked, kernel, iterations=1)
         masked = cv2.dilate(masked, kernel, iterations=1)
@@ -92,21 +84,28 @@ class VertexFinder:
 
 
 if __name__ == "__main__":
-    img = cv2.imread('test-data/train.jpg', -1)
-    coords = np.array([[948.88104,  571.6861],
-                       [842.7949,  2652.1519],
-                       [3860.3545,  2652.1519],
-                       [3718.9062,   489.17468], ], dtype=np.int32)
+    img = plt.imread('test-data/hist.jpg', 3)
+    coords = np.array([[326.3241, 373.75494],
+                       [316.83795, 804.4269],
+                       [734.22925, 794.94073],
+                       [734.22925, 493.28064]], dtype=np.int32)
     finder = VertexFinder()
 
     finder.setup(img, coords)
 
-    test_img = cv2.imread('test-data/test.jpg', -1)
+    finder.set_mask(img)
+
+    preview = img.copy()
+    preview[finder.mask == 0] //= 2
+    plt.figure()
+    plt.imshow(preview)
+
+    test_img = cv2.imread('test-data/hist_test2.jpg', -1)
 
     finder.set_mask(test_img)
     vertexes = finder.vertexes()
 
-    test_img[finder.mask == 0] = 0
+    test_img[finder.mask == 0] //= 2
 
     for center in vertexes:
         test_img = cv2.circle(test_img, center, 30, (255, 255, 200), -1)
