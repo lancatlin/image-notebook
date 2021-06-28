@@ -65,17 +65,14 @@ class VertexFinder:
         row, col = self.mask.shape[:2]
         result = []
 
-        retval, labels, stats, centroids = cv2.connectedComponentsWithStats(
+        _, labels, stats, _ = cv2.connectedComponentsWithStats(
             self.mask, connectivity=4)
-        print(stats)
 
         idx, value = -1, 0
         for i, s in enumerate(stats[1:]):
             if s[4] > value:
                 idx = i+1
                 value = s[4]
-
-        print(stats[idx])
 
         for cx, cy in [
                 (0, 0), (0, row), (col, row), (col, 0)]:

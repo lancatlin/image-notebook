@@ -1,7 +1,6 @@
 import os
 import tkinter as tk
 
-from welcome import WelcomeFrame
 from transform import TransformFrame
 from manage import ManageFrame
 from image import Image
@@ -20,12 +19,12 @@ class Application(tk.Tk):
 
         self.images = []
         self.frames = {}
-        for F in (WelcomeFrame, ManageFrame, TransformFrame):
+        for F in (ManageFrame, TransformFrame):
             frame = F(container, self)
             self.frames[F.__name__] = frame
             frame.grid(row=0, column=0, sticky='nsew')
 
-        self.switch_frame('WelcomeFrame')
+        self.switch_frame('ManageFrame')
 
     def switch_frame(self, frame_name):
         frame = self.frames[frame_name]
@@ -39,11 +38,5 @@ class Application(tk.Tk):
 
 if __name__ == "__main__":
     app = Application()
-    app.set_images([
-        # Image('test-data/train.jpg'),
-        # Image('test-data/test.jpg'),
-        Image(os.path.join('test-data/selected', f)) for f in os.listdir('test-data/selected')
-    ])
-    app.switch_frame('TransformFrame')
     app.wm_title('Image Notebook')
     app.mainloop()

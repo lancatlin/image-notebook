@@ -1,8 +1,11 @@
 import tkinter as tk
+from tkinter.filedialog import askopenfilenames
+
 from scrollable_frame import ScrollableFrame
 from canvas import ImageCanvas
-from styles import MARGIN
+import styles
 from frame import Frame
+from image import Image
 
 
 COLUMN = 4
@@ -13,11 +16,18 @@ class ManageFrame(Frame):
         super().__init__(master)
         self.master = master
         self.controller = controller
-        label = tk.Label(self, text='Manage')
+        label = tk.Label(self, text='Image Notebook', font=styles.TITLE)
         label.pack()
-        button = tk.Button(self, text='Transform',
-                           command=lambda: controller.switch_frame('TransformFrame'))
-        button.pack()
+        bt_frame = tk.Frame(self)
+        bt_frame.pack()
+
+        open_bt = tk.Button(
+            bt_frame, text='Open Files', command=self.select_files)
+        open_bt.pack(side=tk.LEFT)
+
+        transform = tk.Button(bt_frame, text='Transform',
+                              command=lambda: controller.switch_frame('TransformFrame'))
+        transform.pack(side=tk.LEFT)
         image_frame = ScrollableFrame(self)
         image_frame.pack(fill='both', expand=True)
         image_frame.scrollable_frame.grid_columnconfigure(COLUMN)
@@ -25,16 +35,26 @@ class ManageFrame(Frame):
         self.image_frame = image_frame.scrollable_frame
         self.images = []
 
-    def on_switch(self):
-        if not self.images:
-            for i in range(len(self.controller.images)):
-                image = ImageFrame(
-                    master=self.image_frame,
-                    controller=self.controller,
-                    on_update=self.show,
-                    on_pop=self.pop)
-                image.grid(row=i//COLUMN, column=i % COLUMN)
-                self.images.append(image)
+    def select_files(self):
+        filenames = askopenfilenames(
+            title='Open Images',
+            filetypes=(('Image Files', ('*.jpg', '*.png')), ('All', '*'))
+        )
+        if filenames:
+            images = [Image(filename)
+                      for filename in filenames]
+            self.controller.images += images
+            self.append_images(len(images))
+
+    def append_images(self, num):
+        for i in range(len(self.images), len(self.images)+num):
+            image = ImageFrame(
+                master=self.image_frame,
+                controller=self.controller,
+                on_update=self.show,
+                on_pop=self.pop)
+            image.grid(row=i//COLUMN, column=i % COLUMN)
+            self.images.append(image)
         self.show()
 
     def show(self):
@@ -99,6 +119,6 @@ class ImageFrame(tk.Frame):
 class PreviewImage(ImageCanvas):
     def image_size(self, image):
         width = self.controller.width
-        image_width = (width - 2*MARGIN) // 4
+        image_width = (width - 2*styles.MARGIN) // 4
         image_height = int(image_width * (image.height / image.width))
         return image_width, image_height
