@@ -65,7 +65,7 @@ class VertexFinder:
         row, col = self.mask.shape[:2]
         result = []
 
-        retval, labels, stats, centroids = cv2.connectedComponentsWithStats(
+        _, labels, stats, _ = cv2.connectedComponentsWithStats(
             self.mask, connectivity=4)
         print(stats)
 
