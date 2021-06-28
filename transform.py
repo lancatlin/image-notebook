@@ -97,7 +97,6 @@ class TransformFrame(Frame):
             if vertical:
                 result = 1 / result
         self.image_controller.set_aspect_ratio(result)
-        print(result)
 
     def reset(self):
         self.current = 0
