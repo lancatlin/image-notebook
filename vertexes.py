@@ -7,6 +7,13 @@ def distance(x, y, cx, cy):
     return (x-cx)**2 + (y-cy)**2
 
 
+def filter(img, mask):
+    result = np.ones(img.shape[:2], dtype=np.uint8)
+    for i, frame in enumerate(cv2.split(img)):
+        result *= mask[i][frame]
+    return result
+
+
 def closest(mask, cx, cy, value):
     '''Return the closest pixel to (cx, cy) which is 0'''
     nonzero = cv2.findNonZero((mask == value).astype(np.uint8))
@@ -23,6 +30,7 @@ class VertexFinder:
         self.learned = False
         self.lowest = np.zeros((3,), dtype=np.uint8)
         self.highest = np.zeros((3,), dtype=np.uint8)
+        self.threshold = []
 
     def setup(self, img, coords):
         mask = np.ones(img.shape[:2], dtype=np.uint8)
@@ -53,11 +61,14 @@ class VertexFinder:
 
     def set_mask(self, img):
         '''Mask the img not in the color range'''
-        mask = 255-cv2.inRange(img, self.lowest, self.highest)
+        mask = np.zeros((3, 256), dtype=np.uint8)
+        for i in range(3):
+            mask[i][self.lowest[i]:self.highest[i]] = 1
+        masked = 1-filter(img, mask)
         kernel = np.ones([9, 9], dtype=np.uint8)
-        mask = cv2.erode(mask, kernel, iterations=1)
-        mask = cv2.dilate(mask, kernel, iterations=1)
-        self.mask = mask
+        masked = cv2.erode(masked, kernel, iterations=1)
+        masked = cv2.dilate(masked, kernel, iterations=1)
+        self.mask = masked
 
     def vertexes(self):
         '''Get the vertexes by the color threshold

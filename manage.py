@@ -57,6 +57,9 @@ class ManageFrame(Frame):
             self.images.append(image)
         self.show()
 
+    def on_switch(self):
+        self.show()
+
     def show(self):
         for i, image in enumerate(self.images):
             image.set_image(i)

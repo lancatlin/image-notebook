@@ -3,13 +3,6 @@ import cv2
 from matplotlib import pyplot as plt
 
 
-def filter(img, mask):
-    result = []
-    for i, frame in enumerate(cv2.split(img)):
-        result.append(mask[i][frame] * frame)
-    return cv2.merge(result)
-
-
 img = cv2.imread('test-data/1.jpg', 3)
 mask = np.ones((3, 256))
 mask[0, 0:128] = 0
