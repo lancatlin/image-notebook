@@ -1,8 +1,11 @@
 import tkinter as tk
+from tkinter.filedialog import askopenfilenames
+
 from scrollable_frame import ScrollableFrame
 from canvas import ImageCanvas
 from styles import MARGIN
 from frame import Frame
+from image import Image
 
 
 COLUMN = 4
@@ -15,9 +18,13 @@ class ManageFrame(Frame):
         self.controller = controller
         label = tk.Label(self, text='Manage')
         label.pack()
-        button = tk.Button(self, text='Transform',
-                           command=lambda: controller.switch_frame('TransformFrame'))
-        button.pack()
+        open_bt = tk.Button(
+            self, text='Open Files', command=self.select_files)
+        open_bt.pack()
+
+        transform = tk.Button(self, text='Transform',
+                              command=lambda: controller.switch_frame('TransformFrame'))
+        transform.pack()
         image_frame = ScrollableFrame(self)
         image_frame.pack(fill='both', expand=True)
         image_frame.scrollable_frame.grid_columnconfigure(COLUMN)
@@ -25,16 +32,26 @@ class ManageFrame(Frame):
         self.image_frame = image_frame.scrollable_frame
         self.images = []
 
-    def on_switch(self):
-        if not self.images:
-            for i in range(len(self.controller.images)):
-                image = ImageFrame(
-                    master=self.image_frame,
-                    controller=self.controller,
-                    on_update=self.show,
-                    on_pop=self.pop)
-                image.grid(row=i//COLUMN, column=i % COLUMN)
-                self.images.append(image)
+    def select_files(self):
+        filenames = askopenfilenames(
+            title='Open Images',
+            filetypes=(('Image Files', ('*.jpg', '*.png')), ('All', '*'))
+        )
+        if filenames:
+            images = [Image(filename)
+                      for filename in filenames]
+            self.controller.images += images
+            self.append_images(len(images))
+
+    def append_images(self, num):
+        for i in range(len(self.images), len(self.images)+num):
+            image = ImageFrame(
+                master=self.image_frame,
+                controller=self.controller,
+                on_update=self.show,
+                on_pop=self.pop)
+            image.grid(row=i//COLUMN, column=i % COLUMN)
+            self.images.append(image)
         self.show()
 
     def show(self):
