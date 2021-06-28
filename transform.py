@@ -4,6 +4,7 @@ import turtle
 from frame import Frame
 from canvas import ImageCanvas, DragableCanvas
 from controller import ImageController
+import styles
 
 
 class TransformFrame(Frame):
@@ -21,7 +22,7 @@ class TransformFrame(Frame):
         canvas_ct.grid_rowconfigure(2)
         canvas_ct.grid_columnconfigure(2)
 
-        origin_label = tk.Label(canvas_ct, text='Origin', font=('Arial', 25))
+        origin_label = tk.Label(canvas_ct, text='Origin', font=styles.TITLE)
         origin_label.grid(row=0, column=0)
         self.origin = DragableCanvas(
             controller=self.controller, master=canvas_ct)

@@ -1,7 +1,6 @@
 import os
 import tkinter as tk
 
-from welcome import WelcomeFrame
 from transform import TransformFrame
 from manage import ManageFrame
 from image import Image
@@ -39,13 +38,5 @@ class Application(tk.Tk):
 
 if __name__ == "__main__":
     app = Application()
-    '''
-    app.set_images([
-        # Image('test-data/train.jpg'),
-        # Image('test-data/test.jpg'),
-        Image(os.path.join('test-data/selected', f)) for f in os.listdir('test-data/selected')
-    ])
-    app.switch_frame('TransformFrame')
-    '''
     app.wm_title('Image Notebook')
     app.mainloop()
