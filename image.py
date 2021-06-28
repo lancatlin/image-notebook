@@ -4,6 +4,8 @@ import cv2
 
 
 class Image:
+    '''Image hold the information of an image'''
+
     def __init__(self, filename):
         self.filename = filename
         self.name = filename.split('/')[-1]
@@ -24,16 +26,14 @@ class Image:
         return PImage.fromarray(img)
 
     def with_mask(self, mask):
-        ''' mask the origin image '''
+        '''mask the origin image '''
         img = self.array()
         img[mask == 0] //= 2
         return self.toPIL(img)
 
     def transform(self, coords):
         ''' Transform the origin image to product
-        @param
-        coords: the coords picked from canvas
-        @param
+            @param coords: the coords picked from canvas
         '''
         self.coords = coords
         w, h = self.output_shape()

@@ -3,6 +3,8 @@ from tkinter import ttk
 
 
 class ScrollableFrame(ttk.Frame):
+    '''A frame which allows to scroll its content'''
+
     def __init__(self, container, *args, **kwargs):
         super().__init__(container, *args, **kwargs)
         canvas = tk.Canvas(self)

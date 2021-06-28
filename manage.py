@@ -36,6 +36,7 @@ class ManageFrame(Frame):
         self.images = []
 
     def select_files(self):
+        '''Open a dialog to open files from os'''
         filenames = askopenfilenames(
             title='Open Images',
             filetypes=(('Image Files', ('*.jpg', '*.png')), ('All', '*'))
@@ -47,6 +48,7 @@ class ManageFrame(Frame):
             self.append_images(len(images))
 
     def append_images(self, num):
+        '''Append num of ImageFrame'''
         for i in range(len(self.images), len(self.images)+num):
             image = ImageFrame(
                 master=self.image_frame,
@@ -61,16 +63,20 @@ class ManageFrame(Frame):
         self.show()
 
     def show(self):
+        '''Set the images to show'''
         for i, image in enumerate(self.images):
             image.set_image(i)
 
     def pop(self):
+        '''Remove one ImageFrame from the button'''
         image = self.images[-1]
         image.destroy()
         del self.images[-1]
 
 
 class ImageFrame(tk.Frame):
+    '''Frame that display an image and controlling buttons'''
+
     def __init__(self, master, controller, on_update, on_pop):
         super().__init__(master)
         self.controller = controller
@@ -103,24 +109,30 @@ class ImageFrame(tk.Frame):
         forward.pack(side=tk.LEFT)
 
     def set_image(self, image_index):
+        '''Set the image to display'''
         self.index = image_index
         image = self.controller.images[image_index]
         self.label.config(text=image.name)
         self.canvas.show_image(image.product)
 
     def switch(self, dest):
+        '''Switch the image with dest'''
         images = self.controller.images
         images[self.index], images[dest] = images[dest], images[self.index]
         self.on_update()
 
     def delete(self):
+        '''Delete the image'''
         del self.controller.images[self.index]
         self.on_pop()
         self.on_update()
 
 
 class PreviewImage(ImageCanvas):
+    '''Display the preview image'''
+
     def image_size(self, image):
+        '''Set the size of preview image'''
         width = self.controller.width
         image_width = (width - 2*styles.MARGIN) // 4
         image_height = int(image_width * (image.height / image.width))

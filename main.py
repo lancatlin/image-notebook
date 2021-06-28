@@ -27,13 +27,10 @@ class Application(tk.Tk):
         self.switch_frame('ManageFrame')
 
     def switch_frame(self, frame_name):
+        '''Switch the current frame'''
         frame = self.frames[frame_name]
         frame.tkraise()
         frame.on_switch()
-
-    def set_images(self, images):
-        '''Being called by welcome frame'''
-        self.images = images
 
 
 if __name__ == "__main__":

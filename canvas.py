@@ -8,10 +8,13 @@ from vertexes import VertexFinder
 
 
 def center(coords):
+    '''Get the center of an rectangle'''
     return (coords[0] + coords[2]) // 2, (coords[1] + coords[3]) // 2
 
 
 class ImageCanvas(tk.Canvas):
+    '''A canvas which display the thumbnail of the image'''
+
     def __init__(self, controller=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.controller = controller
@@ -20,6 +23,7 @@ class ImageCanvas(tk.Canvas):
         self.image_to_show = 'product'
 
     def config_size(self, size):
+        '''Update the canvas size'''
         self.width, self.height = size
         self.config(width=self.width, height=self.height)
 
@@ -41,6 +45,7 @@ class ImageCanvas(tk.Canvas):
         self.thumbnail = ImageTk.PhotoImage(image=result)
 
     def image_size(self, image):
+        '''Get the size of the thumbnail'''
         if image.width > image.height:
             width = self.controller.width
             image_width = (width - 2*MARGIN) // 2
@@ -54,6 +59,8 @@ class ImageCanvas(tk.Canvas):
 
 
 class DragableCanvas(ImageCanvas):
+    '''A ImageCanvas which can drag the vertexes point'''
+
     def __init__(self, controller, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.controller = controller
@@ -68,13 +75,16 @@ class DragableCanvas(ImageCanvas):
         self.callback = None
 
     def set_callback(self, callback):
+        '''Set the callback being called when the coords updates'''
         self.callback = callback
 
     def show_image(self, image, coords):
+        '''Show the image and draw the vertexes'''
         super().show_image(image)
         self.draw_vertexes(coords)
 
     def draw_vertexes(self, coords):
+        '''Draw the four vertexes on the canvas'''
         self.delete('vertex')
         r = self.r
         if coords is None:
@@ -89,6 +99,7 @@ class DragableCanvas(ImageCanvas):
         self.draw_lines()
 
     def draw_lines(self):
+        '''Draw the line between the vertexes'''
         coords = self.get_coords()
         coords = self.coords_transform(coords).tolist()
         coords.append(coords[0])
@@ -96,22 +107,27 @@ class DragableCanvas(ImageCanvas):
         self.create_line(*coords, tags=('lines',), fill='green')
 
     def on_click(self, event):
+        '''Find the current selected vertex'''
         self.selected = self.find_closest(event.x, event.y)
 
     def on_motion(self, event):
+        '''Move the selected vertex to the mouse'''
         if self.selected:
             self.coords(
                 self.selected, (event.x-self.r, event.y-self.r, event.x + self.r, event.y + self.r))
             self.draw_lines()
 
     def on_release(self, event):
+        '''Call the callback to update the coords'''
         self.selected = None
         self.callback(self.get_coords())
 
     def get_coords(self):
+        '''Get the canvas coords of vertexes and transform to the image coords'''
         coords = np.float32([center(self.coords(vertex))
                              for vertex in self.find_withtag('vertex')]) * self.image.width / self.width
         return coords
 
     def coords_transform(self, coords):
+        '''Transform image coords to the canvas coords'''
         return coords * self.width / self.image.width

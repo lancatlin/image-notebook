@@ -4,6 +4,8 @@ from vertexes import VertexFinder
 
 
 class ImageController:
+    '''The controller interact with transform frame and canvas'''
+
     def __init__(self, origin, product):
         self.image = None
         self.origin = origin
@@ -16,6 +18,7 @@ class ImageController:
         self.finder = VertexFinder()
 
     def set_image(self, image):
+        '''Set the current image to display'''
         self.image = image
         self.finder.set_mask(self.image.array())
         self.image.aspect_ratio = self.aspect_ratio
@@ -37,6 +40,7 @@ class ImageController:
         self.update()
 
     def update(self):
+        '''Refresh the canvas'''
         self.finder.set_mask(self.image.array())
         self.transform()
         origin = self.image.with_mask(self.finder.mask)
@@ -49,13 +53,16 @@ class ImageController:
         self.update()
 
     def auto_detect_vertexes(self):
+        '''Find the vertexes by VertexFinder'''
         self.coords = self.finder.vertexes()
 
     def auto_command(self):
+        '''Find vertex and update the screen'''
         self.auto_detect_vertexes()
         self.update()
 
     def transform(self):
+        '''Transform the image'''
         self.image.transform(self.coords.astype(np.float32))
 
     def reset(self):
@@ -64,6 +71,7 @@ class ImageController:
         self.update()
 
     def corners(self):
+        '''The corners coords of the image'''
         width = self.image.width
         height = self.image.height
         return np.array([

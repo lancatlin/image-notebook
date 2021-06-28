@@ -102,6 +102,7 @@ class TransformFrame(Frame):
         self.current = 0
 
     def on_switch(self):
+        '''Being called when being switched'''
         self.image_controller.set_image(self.current_image())
         self.change_aspect_ratio()
 
@@ -121,6 +122,7 @@ class TransformFrame(Frame):
         self.on_switch()
 
     def export(self):
+        '''Export to a PDF file'''
         filename = asksaveasfilename(
             defaultextension='.pdf', filetypes=(('PDF Files', ('*.pdf',)),))
         if not filename:
