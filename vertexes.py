@@ -18,9 +18,9 @@ def filter(img, threshold):
     return result
 
 
-def closest(mask, cx, cy, value):
+def closest(mask, cx, cy):
     '''Return the closest pixel to (cx, cy) on the mask which is 0'''
-    nonzero = cv2.findNonZero((mask == value).astype(np.uint8))
+    nonzero = cv2.findNonZero((mask).astype(np.uint8))
     distances = (nonzero[:, :, 0] - cx) ** 2 + (nonzero[:, :, 1] - cy) ** 2
     idx = np.argmin(distances)
     return nonzero[idx][0]
@@ -62,26 +62,19 @@ class VertexFinder:
             self.threshold[i][histr[:, 0] > threshold] = 1
 
             plt.plot(histr, color=['b', 'g', 'r'][i])
-            #plt.plot(self.threshold[i], color=['b', 'g', 'r'][i])
+            plt.plot(threshold * self.threshold[i], color=['b', 'g', 'r'][i])
             plt.xlim([0, 256])
 
     def set_mask(self, img):
         '''Compute the mask of the image by the threshold
         '''
-        masked = 1-filter(img, self.threshold)
+        mask = 1-filter(img, self.threshold)
         kernel = np.ones([9, 9], dtype=np.uint8)
-        masked = cv2.erode(masked, kernel, iterations=1)
-        masked = cv2.dilate(masked, kernel, iterations=1)
-        self.mask = masked
-
-    def vertexes(self):
-        '''Get the vertexes by the color threshold
-            return the closest points to the four corners'''
-        row, col = self.mask.shape[:2]
-        result = []
+        mask = cv2.erode(mask, kernel, iterations=1)
+        mask = cv2.dilate(mask, kernel, iterations=1)
 
         _, labels, stats, _ = cv2.connectedComponentsWithStats(
-            self.mask, connectivity=4)
+            mask, connectivity=4)
 
         idx, value = -1, 0
         for i, s in enumerate(stats[1:]):  # use [1:] to omit 0
@@ -89,30 +82,31 @@ class VertexFinder:
                 idx = i+1
                 value = s[4]
 
+        self.mask = (labels == idx).astype(np.uint8)
+
+    def vertexes(self):
+        '''Get the vertexes by the color threshold
+            return the closest points to the four corners'''
+        row, col = self.mask.shape[:2]
+        result = []
+
         for cx, cy in [
                 (0, 0), (0, row), (col, row), (col, 0)]:
-            result.append(closest(labels, cx, cy, idx))
+            result.append(closest(self.mask, cx, cy))
         return np.array(result, dtype=np.int32)
 
 
 if __name__ == "__main__":
-    img = plt.imread('test-data/hist.jpg', 3)
-    coords = np.array([[326.3241, 373.75494],
-                       [316.83795, 804.4269],
-                       [734.22925, 794.94073],
-                       [734.22925, 493.28064]], dtype=np.int32)
+    img = cv2.imread('test-data/hist_test.jpg', -1)
+    coords = np.array([[201.10672, 259.92096],
+                       [185.92885, 656.4427],
+                       [521.73914, 652.6482],
+                       [536.917, 371.8577]], dtype=np.int32)
     finder = VertexFinder()
 
     finder.setup(img, coords)
 
-    finder.set_mask(img)
-
-    preview = img.copy()
-    preview[finder.mask == 0] //= 2
-    plt.figure()
-    plt.imshow(preview)
-
-    test_img = cv2.imread('test-data/hist_test2.jpg', -1)
+    test_img = cv2.imread('test-data/hist_test2.jpg', 3)
 
     finder.set_mask(test_img)
     vertexes = finder.vertexes()
