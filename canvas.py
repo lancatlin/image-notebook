@@ -5,6 +5,7 @@ from styles import MARGIN
 from image import Image
 from PIL import Image as PImage
 from vertexes import VertexFinder
+import styles
 
 
 def center(coords):
@@ -93,7 +94,7 @@ class DragableCanvas(ImageCanvas):
         coords = self.coords_transform(coords)
         [
             self.create_oval(
-                x-r, y-r, x+r, y+r, fill='green', tags=('vertex'))
+                x-r, y-r, x+r, y+r, fill=styles.COLOR, outline=styles.COLOR, tags=('vertex'))
             for x, y in coords
         ]
         self.draw_lines()
@@ -104,7 +105,7 @@ class DragableCanvas(ImageCanvas):
         coords = self.coords_transform(coords).tolist()
         coords.append(coords[0])
         self.delete('lines')
-        self.create_line(*coords, tags=('lines',), fill='green')
+        self.create_line(*coords, tags=('lines',), fill=styles.COLOR)
 
     def on_click(self, event):
         '''Find the current selected vertex'''
@@ -126,6 +127,7 @@ class DragableCanvas(ImageCanvas):
         '''Get the canvas coords of vertexes and transform to the image coords'''
         coords = np.float32([center(self.coords(vertex))
                              for vertex in self.find_withtag('vertex')]) * self.image.width / self.width
+        print(coords.__repr__())
         return coords
 
     def coords_transform(self, coords):
