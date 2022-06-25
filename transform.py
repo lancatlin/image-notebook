@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter.filedialog import asksaveasfilename
-import turtle
 from frame import Frame
 from canvas import ImageCanvas, DragableCanvas
 from controller import ImageController

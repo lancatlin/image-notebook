@@ -43,6 +43,9 @@ class VertexFinder:
         '''
         mask = np.ones(img.shape[:2], dtype=np.uint8)
         cv2.fillConvexPoly(mask, coords.astype(np.int32), 0)
+        new_image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        new_image[mask == 0] = 0
+        plt.imshow(new_image)
         self.set_threshold(img, mask)
         self.learned = True
 
